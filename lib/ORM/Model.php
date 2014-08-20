@@ -5,11 +5,13 @@ namespace ORM;
 use ORM\Exception\NoShardingKeyProvided;
 use ORM\Exception\UnknownMethod;
 use ORM\Model\Hookable;
+use ORM\Model\Relationable;
 
 abstract class Model
 {
     use Conventional;
     use Hookable;
+    use Relationable;
 
     private $syncedValues = [];
     private $changedValues = [];
@@ -111,36 +113,10 @@ abstract class Model
         return null;
     }
 
-    public function getByRelation($name)
-    {
-        return static::$relations[$name]->take($this);
-    }
-
     public function set($name, $value)
     {
         $this->changedValues[self::camelCaseToSnakeCase($name)] = $value;
         return $this;
-    }
-
-    protected function hasOne($collection, array $options = [])
-    {
-        static::$relations[$collection::getModelName()] = new Relation($collection, Relation::HAS_ONE, $options);
-    }
-
-    protected function belongsTo($collection, array $options = [])
-    {
-        static::$relations[$collection::getModelName()] = new Relation($collection, Relation::BELONGS_TO, $options);
-    }
-
-    protected function hasMany($collection, array $options = [])
-    {
-        static::$relations[$collection::getCollectionName()] = new Relation($collection, Relation::HAS_MANY, $options);
-    }
-
-    protected function hasAndBelongsToMany($collection, array $options = [])
-    {
-        static::$relations[$collection::getCollectionName()] = new Relation(
-            $collection, Relation::HAS_AND_BELONGS_TO_MANY, $options);
     }
 
     private function getOptimalKey()
