@@ -1,4 +1,7 @@
 {
+    "name": "m16a1/leafORM",
+    "description": "Quick and dirty PHP ORM for MongoDB",
+    "version": "0.1",
     "require": {
         "php":">=5.5.0"
     },
