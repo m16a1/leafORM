@@ -76,7 +76,7 @@ abstract class Model
     {
         $this->beforeDelete();
         if ($this->syncedValues) {
-            $this->getDbCollection()->remove();
+            $this->getDbCollection()->remove($this->getOptimalKey());
         }
         $this->afterDelete();
     }
