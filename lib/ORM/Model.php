@@ -15,7 +15,6 @@ abstract class Model
 
     private $syncedValues = [];
     private $changedValues = [];
-    private $fields = [];
     private static $relations = [];
     private $shardingKey = ['_id'];
 
@@ -81,12 +80,6 @@ abstract class Model
             $this->getDbCollection()->remove($this->getOptimalKey());
         }
         $this->afterDelete();
-    }
-
-
-    protected function addFields($fields)
-    {
-        $this->fields = $fields;
     }
 
     public function __call($name, $args)
