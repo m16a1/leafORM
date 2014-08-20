@@ -1,5 +1,5 @@
 {
-    "name": "m16a1/leafORM",
+    "name": "m16a1/leaf-orm",
     "description": "Quick and dirty PHP ORM for MongoDB",
     "version": "0.1",
     "require": {
