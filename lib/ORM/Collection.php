@@ -4,7 +4,7 @@ namespace ORM;
 
 abstract class Collection
 {
-    use Conventional;
+    use ConventionalCollection;
 
     protected static $isModel = false;
     protected static $collection;
@@ -34,7 +34,7 @@ abstract class Collection
      */
     public static function find($id)
     {
-        $result = static::getCollection()->findOne(['_id' => $id]);
+        $result = static::getDbCollection()->findOne(['_id' => $id]);
         if (!$result) {
             throw new DocumentNotFound();
         }
@@ -63,7 +63,7 @@ abstract class Collection
     public static function findOrCreate(array $criteria)
     {
         return new Query(
-            static::getCollection()->findAndModify($criteria, $criteria, ['new' => true]),
+            static::getDbCollection()->findAndModify($criteria, $criteria, ['new' => true]),
             static::getModelName()
         );
     }
@@ -76,7 +76,7 @@ abstract class Collection
     public static function findAndUpdate(array $criteria, array $updateData)
     {
         return new Query(
-            static::getCollection()->findAndModify($criteria, $updateData, ['update' => true, 'upsert' => true]),
+            static::getDbCollection()->findAndModify($criteria, $updateData, ['update' => true, 'upsert' => true]),
             static::getModelName()
         );
     }
@@ -88,6 +88,14 @@ abstract class Collection
     public static function exists(array $criteria)
     {
         return (bool) static::where($criteria)->pluck('_id')->limit(1)->first();
+    }
 
+    /**
+     * @param array $criteria
+     * @return Model
+     */
+    public static function first(array $criteria)
+    {
+        return static::where($criteria)->limit(1)->first();
     }
 }

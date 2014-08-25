@@ -33,6 +33,28 @@ class Relation
         throw new Exception\UnkonwnRelationType();
     }
 
+    public function establish(Model $currentModel, Model $relatedModel)
+    {
+        switch ($this->type) {
+            case self::HAS_ONE:
+                $relatedModel->set($relatedModel::getEntityName() . '_id', $currentModel->get('_id'));
+                break;
+            case self::BELONGS_TO:
+                $currentModel->set($currentModel::getEntityName() . '_id', $relatedModel->get('_id'));
+                break;
+            case self::HAS_MANY:
+                $name = $relatedModel::getEntityName() . '_ids';
+                $ids = $relatedModel->get($name) + $currentModel->get('_id');
+                $relatedModel->set($name, $ids);
+                break;
+            case self::HAS_AND_BELONGS_TO_MANY:
+                $name = $currentModel::getEntityName() . '_ids';
+                $ids = $currentModel->get($name) + $relatedModel->get('_id');
+                $currentModel->set($name, $ids);
+                break;
+        }
+    }
+
     private function takeByHasOne(Model $relatedModel)
     {
         return $this->takeByHasMany($relatedModel)->limit(1)->first();

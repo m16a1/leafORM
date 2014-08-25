@@ -9,19 +9,19 @@ use ORM\Model\Relationable;
 
 abstract class Model
 {
-    use Conventional;
+    use ConventionalModel;
     use Hookable;
     use Relationable;
 
     private $syncedValues = [];
     private $changedValues = [];
-    private static $relations = [];
     private $shardingKey = ['_id'];
 
     public function __construct(array $args, array $syncedValues = [])
     {
         $this->changedValues = $args;
         $this->syncedValues = $syncedValues;
+        $this->changedValues['_id'] = new \MongoId();
         if (!static::$relations) {
             $this->setRelations();
         }
@@ -88,9 +88,12 @@ abstract class Model
             if (isset(static::$relations[$name])) {
                 return $this->getByRelation($name);
             }
-            return $this->get($match[1]);
+            return $this->get(self::camelCaseToSnakeCase($match[1]));
         } elseif (preg_match('!set(\w+)!', $name, $match)) {
-            return $this->set($match[1], current($args));
+            if (isset(static::$relations[$name])) {
+                return $this->setByRelation($name, current($args));
+            }
+            return $this->set(self::camelCaseToSnakeCase($match[1]), current($args));
         }
         throw new UnknownMethod;
     }
